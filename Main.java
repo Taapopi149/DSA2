@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import SectionB.*;
+import SectionB.AVLTree.AVLTree;
 
 
 public class Main {
@@ -7,6 +8,7 @@ public class Main {
 
         Scanner userChoice = new Scanner(System.in);
         BinarySearchTree bst = new BinarySearchTree();
+        AVLTree avlTree = new AVLTree();
         //Instances of the objects
 
         int choice;
@@ -25,7 +27,7 @@ public class Main {
                 bstSub(userChoice, bst);
                 break;
             case 2:
-                AvlSub(userChoice);
+                AvlSub(userChoice, avlTree);
                 break;
             case 3:
                 BlackTreeSub(userChoice);
@@ -102,7 +104,7 @@ public class Main {
 
     }
 
-    public static void AvlSub (Scanner input) {
+    public static void AvlSub (Scanner input, AVLTree avlTree) {
         int avlChoice;
 
         do {
@@ -117,7 +119,41 @@ public class Main {
             System.out.println("Enter Choice");
             avlChoice = input.nextInt();
 
+            switch (avlChoice) {
+                case 1:
+                    System.out.println("How many elements do you want to insert? ");
+                    int count = input.nextInt();
+                    int[] list = new int[count];
 
+                    System.out.println("\nEnter your list: ");
+                    for (int i = 0; i < count; i++) {
+                        list[i] = input.nextInt();
+                    }
+
+                    for (int value: list){
+                        avlTree.insert(value);
+                    }
+                    System.out.println("Elements inserted into the AVL Tree.");
+                    break;
+                case 2:
+                    System.out.println("Enter the number to be inserted :");
+                    int deleteThatNumber = input.nextInt();
+                    avlTree.delete(deleteThatNumber);
+                    break;
+
+                case 3:
+                    avlTree.inorderTraversal();
+                    break;
+                case 4:
+                    avlTree.postorderTraversal();
+                    break;
+                case 5:
+                    avlTree.preorderTraversal();
+                    break;
+
+                default:
+                    break;
+            }
 
             
         } while (avlChoice != 6);
