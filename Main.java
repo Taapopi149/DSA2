@@ -117,7 +117,14 @@ public class Main {
             System.out.println("Enter Choice");
             avlChoice = input.nextInt();
 
-
+            switch (input) {
+                case 1:
+                                
+                    break;
+            
+                default:
+                    break;
+            }
 
             
         } while (avlChoice != 6);
