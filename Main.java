@@ -1,44 +1,45 @@
 import java.util.Scanner;
 import SectionB.*;
 
-
 public class Main {
     public static void main(String[] args) {
 
         Scanner userChoice = new Scanner(System.in);
         BinarySearchTree bst = new BinarySearchTree();
-        //Instances of the objects
+        AVLTree avltree = new AVLTree();
+        // Instances of the objects
 
         int choice;
         do {
-        System.out.println("==============================TREE IMPLEMENTATION MENU================================");
-        System.out.println("1. Binary Search Tree");
-        System.out.println("2. AVL");
-        System.out.println("3. Red Black Tree");
-        System.out.println("4. B-trees");
-        System.out.println("5. Exit");
-        System.out.print("Enter your choice: ");
-        choice = userChoice.nextInt();
+            System.out
+                    .println("==============================TREE IMPLEMENTATION MENU================================");
+            System.out.println("1. Binary Search Tree");
+            System.out.println("2. AVL");
+            System.out.println("3. Red Black Tree");
+            System.out.println("4. B-trees");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            choice = userChoice.nextInt();
 
-        switch (choice) {
-            case 1:
-                bstSub(userChoice, bst);
-                break;
-            case 2:
-                AvlSub(userChoice);
-                break;
-            case 3:
-                BlackTreeSub(userChoice);
-                break;
-            case 4:
-                BtreesSub(userChoice);
-                break;     
-            default:
-                break;
-        }
+            switch (choice) {
+                case 1:
+                    bstSub(userChoice, bst);
+                    break;
+                case 2:
+                    AvlSub(userChoice, avltree);
+                    break;
+                case 3:
+                    BlackTreeSub(userChoice);
+                    break;
+                case 4:
+                    BtreesSub(userChoice);
+                    break;
+                default:
+                    break;
+            }
 
-        } while (choice !=5);
-        
+        } while (choice != 5);
+
     }
 
     public static void bstSub(Scanner input, BinarySearchTree bst) {
@@ -61,29 +62,29 @@ public class Main {
                     System.out.println("How many elements do you want to insert? ");
                     int count = input.nextInt();
                     int[] list = new int[count];
-    
+
                     System.out.println("\nEnter your list: ");
                     for (int i = 0; i < count; i++) {
                         list[i] = input.nextInt();
                     }
-    
+
                     bst.createNewList(list);
                     break;
-    
+
                 case 1:
                     System.out.println("Enter the number to be inserted :");
                     int theNumberToInsert = input.nextInt();
                     bst.insert(theNumberToInsert);
                     break;
-                    
-                case 2: 
+
+                case 2:
 
                     System.out.println("Enter number to Delete: ");
                     int numberToDelete = input.nextInt();
                     bst.delete(numberToDelete);
                     break;
                 case 3:
-                    
+
                     bst.inOrderTraversal();
                     break;
                 case 4:
@@ -95,19 +96,17 @@ public class Main {
                 default:
                     break;
             }
-        }
-        while(bstChoice !=6);
-
-       
+        } while (bstChoice != 6);
 
     }
 
-    public static void AvlSub (Scanner input) {
+    public static void AvlSub(Scanner input, AVLTree avltree) {
         int avlChoice;
 
         do {
 
             System.out.println("\n======================AVL Trees=============================");
+            System.out.println("0. Create List ");
             System.out.println("1. Insert");
             System.out.println("2. Delete ");
             System.out.println("3. Print Inorder");
@@ -117,20 +116,52 @@ public class Main {
             System.out.println("Enter Choice");
             avlChoice = input.nextInt();
 
-            switch (input) {
-                case 1:
-                                
+            switch (avlChoice) {
+                case 0:
+                    System.out.println("How many elements do you want to insert? ");
+                    int count = input.nextInt();
+                    int[] list = new int[count];
+
+                    System.out.println("\nEnter your list: ");
+                    for (int i = 0; i < count; i++) {
+                        list[i] = input.nextInt();
+                    }
+                    avltree.createNewList(list);
                     break;
-            
+
+                case 1:
+                    System.out.println("Enter number to be inserted: ");
+                    int theNumberToInsert = input.nextInt();
+                    avltree.insert(theNumberToInsert);
+                    break;
+                case 2:
+                    System.out.println("Enter the number to be deleted : ");
+                    int theNumberToDelete = input.nextInt();
+                    avltree.delete(theNumberToDelete);
+                    break;
+
+                case 3:
+                    System.out.println("Inorder traversal: \n");
+                    avltree.inOrder();
+                    break;
+
+                case 4:
+                    System.out.println("Postorder traversal: \n");
+                    avltree.postOrder();
+                    break;
+
+                case 5:
+                    System.out.println("Preorder traversal: \n");
+                    avltree.preOrder();
+                    break;
                 default:
                     break;
             }
 
-            
         } while (avlChoice != 6);
     }
-    
-    public static void BtreesSub (Scanner input) {
+
+    public static void BtreesSub(Scanner input) {
         int btreeChoice;
 
         do {
@@ -143,17 +174,17 @@ public class Main {
             System.out.println("6. Back to Menu");
             System.out.println("Enter Choice");
             btreeChoice = input.nextInt();
-    
 
         } while (btreeChoice != 6);
     }
- 
-    public static void BlackTreeSub (Scanner input) {
+
+    public static void BlackTreeSub(Scanner input) {
         int blacktreeChoice;
 
         do {
-            
-            System.out.println("\n============================= Black and Red Trees ==================================");
+
+            System.out
+                    .println("\n============================= Black and Red Trees ==================================");
             System.out.println("1. Insert");
             System.out.println("2. Delete ");
             System.out.println("3. Print Inorder");
@@ -165,7 +196,6 @@ public class Main {
 
         } while (blacktreeChoice != 6);
 
-
     }
-    
+
 }
