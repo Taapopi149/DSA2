@@ -1,4 +1,4 @@
-package SectionB;
+package SectionB.BinarySearchTree;
 
 public class BinarySearchTree {
 
