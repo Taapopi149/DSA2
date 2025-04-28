@@ -1,8 +1,9 @@
 import java.util.Scanner;
-import SectionB.*;
 import SectionB.AVLTree.*;
 import SectionB.BinarySearchTree.BinarySearchTree;
 import SectionB.RebBlackTree.RedBlackTree;
+import SectionB.Btrees.*;
+import SectionB.Btrees.Btrees;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,6 +13,7 @@ public class Main {
         BinarySearchTree bst = new BinarySearchTree();
         AVLTree avltree = new AVLTree();
         RedBlackTree redBlackTree = new RedBlackTree();
+  
 
         // Instances of the objects
 
@@ -172,8 +174,14 @@ public class Main {
     public static void BtreesSub(Scanner input) {
         int btreeChoice;
 
+        System.out.println("Enter the minimum degree for the B-tree (this will be used to govern the size of the node):  ");
+        int minimumDegree = input.nextInt();
+        
+        Btrees btrees = new Btrees(minimumDegree);
+
         do {
             System.out.println("\n============================= B-Trees ==================================");
+            System.out.println("0. Create New List");
             System.out.println("1. Insert");
             System.out.println("2. Delete ");
             System.out.println("3. Print Inorder");
@@ -182,6 +190,36 @@ public class Main {
             System.out.println("6. Back to Menu");
             System.out.println("Enter Choice");
             btreeChoice = input.nextInt();
+
+            switch(btreeChoice) {
+                case 0:
+
+                System.out.println("How many Elements do you want to insert?: ");
+                int keepCount = input.nextInt();
+                int[] elements = new int[keepCount];
+
+                System.out.println("\nEnter the List of elements: ");
+                for (int i = 0; i < keepCount; i ++ ){
+                    elements[i] = input.nextInt();
+                }
+
+                btrees.insertList(elements);
+                break;
+
+                case 1:
+                System.out.print("Enter the number to be inserted: ");
+                int elementToInsert = input.nextInt();
+                btrees.insert(elementToInsert);
+                break;
+                case 3:
+                System.out.println("Inorder traversal:");
+                btrees.traverse(); 
+                break;
+                default:
+                System.out.println("Invalid choice. Please try again.");
+                break;
+                    
+            }
 
 
         } while (btreeChoice != 6);
