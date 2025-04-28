@@ -2,7 +2,6 @@ import java.util.Scanner;
 import SectionB.AVLTree.*;
 import SectionB.BinarySearchTree.BinarySearchTree;
 import SectionB.RebBlackTree.RedBlackTree;
-import SectionB.Btrees.*;
 import SectionB.Btrees.Btrees;
 
 public class Main {
@@ -86,13 +85,11 @@ public class Main {
                     break;
 
                 case 2:
-
                     System.out.println("Enter number to Delete: ");
                     int numberToDelete = input.nextInt();
                     bst.delete(numberToDelete);
                     break;
                 case 3:
-
                     bst.inOrderTraversal();
                     break;
                 case 4:

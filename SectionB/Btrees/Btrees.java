@@ -7,6 +7,11 @@ Maximum number of children = m
 
 Minimum number of keys (except root) = ⌈(m-1)/2⌉
 Minimum number of children (except root) = ⌈m/2⌉
+
+When deleting we need to account for
+-- Deleting from a leaf node
+-- Deleting from internal node
+
  * 
 */
 
@@ -46,6 +51,8 @@ public class Btrees {
         this.root = null;
         this.minimumDegree = minimumDegree;
     }
+
+// ================================== Insert Logic ==================================================
 
     //Insert a List
     public void insertList(int[] elements) {
@@ -143,6 +150,196 @@ private void insertNonFull(BtreeNode node, int key) {
         parent.n += 1;
 
     }
+
+// =============================== delete Logic====================================================
+
+public void delete(int key) {
+    if (root == null) {
+        System.out.println("The tree is empty.");
+        return;
+    }
+    
+    delete(root, key);
+    if (root.n == 0) {
+        if (root.leaf) {
+            root = null;
+        } else {
+            root = root.childern[0];
+        }
+    }
+    System.out.println("Element deleted from the B-tree.");
+}
+
+// Hepler Function 
+private void delete(BtreeNode node, int key) {
+    int idx = findKey(node, key);
+
+    // Case 1: The key is in the node
+    if (idx < node.n && node.keys[idx] == key) {
+        if (node.leaf) {
+            // Case 1a: Key is in a leaf node
+            removeFromLeaf(node, idx);
+        } else {
+            // Case 1b: Key is in an internal node
+            removeFromInternalNode(node, idx);
+        }
+    } else {
+        // Key is not present in this node
+        if (node.leaf) {
+            System.out.println("The key is not in the tree.");
+            return;
+        }
+
+        boolean flag = (idx == node.n); // if we are at the rightmost child
+        BtreeNode child = node.childern[idx];
+        if (child.n < minimumDegree) {
+            fill(node, idx);
+        }
+
+        if (flag && idx > node.n) {
+            delete(node.childern[idx - 1], key);
+        } else {
+            delete(node.childern[idx], key);
+        }
+    }
+}
+
+private void removeFromLeaf(BtreeNode node, int idx) {
+    for (int i = idx + 1; i < node.n; i++) {
+        node.keys[i - 1] = node.keys[i];
+    }
+    node.n--;
+}
+
+private void removeFromInternalNode(BtreeNode node, int idx) {
+    int key = node.keys[idx];
+    if (node.childern[idx].n >= minimumDegree) {
+        int pred = getPred(node, idx);
+        node.keys[idx] = pred;
+        delete(node.childern[idx], pred);
+    } else if (node.childern[idx + 1].n >= minimumDegree) {
+        int succ = getSucc(node, idx);
+        node.keys[idx] = succ;
+        delete(node.childern[idx + 1], succ);
+    } else {
+        merge(node, idx);
+        delete(node.childern[idx], key);
+    }
+}
+
+private int getPred(BtreeNode node, int idx) {
+    BtreeNode cur = node.childern[idx];
+    while (!cur.leaf) {
+        cur = cur.childern[cur.n];
+    }
+    return cur.keys[cur.n - 1];
+}
+
+private int getSucc(BtreeNode node, int idx) {
+    BtreeNode cur = node.childern[idx + 1];
+    while (!cur.leaf) {
+        cur = cur.childern[0];
+    }
+    return cur.keys[0];
+}
+
+private void fill(BtreeNode node, int idx) {
+    if (idx != 0 && node.childern[idx - 1].n >= minimumDegree) {
+        borrowFromPrev(node, idx);
+    } else if (idx != node.n && node.childern[idx + 1].n >= minimumDegree) {
+        borrowFromNext(node, idx);
+    } else {
+        if (idx != node.n) {
+            merge(node, idx);
+        } else {
+            merge(node, idx - 1);
+        }
+    }
+}
+
+private void borrowFromPrev(BtreeNode node, int idx) {
+    BtreeNode child = node.childern[idx];
+    BtreeNode sibling = node.childern[idx - 1];
+
+    for (int i = child.n - 1; i >= 0; i--) {
+        child.keys[i + 1] = child.keys[i];
+    }
+    if (!child.leaf) {
+        for (int i = child.n; i >= 0; i--) {
+            child.childern[i + 1] = child.childern[i];
+        }
+    }
+
+    child.keys[0] = node.keys[idx - 1];
+    if (!child.leaf) {
+        child.childern[0] = sibling.childern[sibling.n];
+    }
+    node.keys[idx - 1] = sibling.keys[sibling.n - 1];
+    child.n += 1;
+    sibling.n -= 1;
+}
+
+private void borrowFromNext(BtreeNode node, int idx) {
+    BtreeNode child = node.childern[idx];
+    BtreeNode sibling = node.childern[idx + 1];
+
+    child.keys[child.n] = node.keys[idx];
+    if (!child.leaf) {
+        child.childern[child.n + 1] = sibling.childern[0];
+    }
+
+    node.keys[idx] = sibling.keys[0];
+
+    for (int i = 1; i < sibling.n; i++) {
+        sibling.keys[i - 1] = sibling.keys[i];
+    }
+    if (!sibling.leaf) {
+        for (int i = 1; i <= sibling.n; i++) {
+            sibling.childern[i - 1] = sibling.childern[i];
+        }
+    }
+
+    child.n += 1;
+    sibling.n -= 1;
+}
+
+
+private void merge(BtreeNode node, int idx) {
+    BtreeNode child = node.childern[idx];
+    BtreeNode sibling = node.childern[idx + 1];
+
+    child.keys[minimumDegree - 1] = node.keys[idx];
+    for (int i = 0; i < sibling.n; i++) {
+        child.keys[i + minimumDegree] = sibling.keys[i];
+    }
+    if (!child.leaf) {
+        for (int i = 0; i <= sibling.n; i++) {
+            child.childern[i + minimumDegree] = sibling.childern[i];
+        }
+    }
+
+    for (int i = idx + 1; i < node.n; i++) {
+        node.keys[i - 1] = node.keys[i];
+    }
+
+    for (int i = idx + 2; i <= node.n; i++) {
+        node.childern[i - 1] = node.childern[i];
+    }
+
+    child.n += sibling.n + 1;
+    node.n--;
+}
+
+private int findKey(BtreeNode node, int key) {
+    int idx = 0;
+    while (idx < node.n && node.keys[idx] < key) {
+        idx++;
+    }
+    return idx;
+}
+
+// =============================== Printing Logic =================================================
+
 
         // In-Order travesal
         public void traverse() {
