@@ -144,7 +144,7 @@ private void insertNonFull(BtreeNode node, int key) {
 
     }
 
-        // Simple traversal (for testing)
+        // In-Order travesal
         public void traverse() {
             if (root != null) traverse(root);
         }
@@ -159,7 +159,52 @@ private void insertNonFull(BtreeNode node, int key) {
             }
             if (!node.leaf) {
                 traverse(node.childern[i]);
-            }
+            }        
         }
+// Preorder traversal
+public void preorder() {
+    if (root != null) {
+        preorder(root);
+    }
+}
+
+private void preorder(BtreeNode node) {
+    System.out.print("Node: ");
+    for (int i = 0; i < node.n; i++) {
+        System.out.print(node.keys[i] + " ");
+    }
+    System.out.println();
+    
+    // Traverse children recursively
+    for (int i = 0; i <= node.n; i++) {
+        if (node.childern[i] != null) {
+            preorder(node.childern[i]);
+        }
+    }
+}
+
+// Postorder traversal
+public void postorder() {
+    if (root != null) {
+        postorder(root);
+    }
+}
+
+private void postorder(BtreeNode node) {
+    // Traverse children recursively
+    for (int i = 0; i <= node.n; i++) {
+        if (node.childern[i] != null) {
+            postorder(node.childern[i]);
+        }
+    }
+    
+    // Print node keys after visiting children
+    System.out.print("Node: ");
+    for (int i = 0; i < node.n; i++) {
+        System.out.print(node.keys[i] + " ");
+    }
+    System.out.println();
+}
+
 
 }

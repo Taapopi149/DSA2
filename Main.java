@@ -215,6 +215,14 @@ public class Main {
                 System.out.println("Inorder traversal:");
                 btrees.traverse(); 
                 break;
+                case 4:
+                System.out.println("Post-order traversal:");
+                btrees.postorder();
+                break;
+                case 5:
+                System.out.println("Pre-order traversal:");
+                btrees.preorder();
+                break;
                 default:
                 System.out.println("Invalid choice. Please try again.");
                 break;
