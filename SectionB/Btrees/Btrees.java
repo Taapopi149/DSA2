@@ -39,6 +39,7 @@ class BtreeNode {
 
     }
 
+
 }
 
 public class Btrees {
@@ -51,6 +52,14 @@ public class Btrees {
         this.root = null;
         this.minimumDegree = minimumDegree;
     }
+
+    
+    public boolean search(int key) {
+    if (root == null) {
+        return false;
+    }
+    return search(root, key) != null;
+}
 
 // ================================== Insert Logic ==================================================
 
@@ -402,6 +411,29 @@ private void postorder(BtreeNode node) {
     }
     System.out.println();
 }
+
+private BtreeNode search(BtreeNode node, int key) {
+    int i = 0;
+    
+    // Find the first key greater than or equal to key
+    while (i < node.n && key > node.keys[i]) {
+        i++;
+    }
+
+    // If the found key is equal to key, return this node
+    if (i < node.n && node.keys[i] == key) {
+        return node;
+    }
+
+    // If the key is not found and this is a leaf node
+    if (node.leaf) {
+        return null;
+    }
+
+    // Go to the appropriate child
+    return search(node.childern[i], key);
+}
+
 
 
 }
