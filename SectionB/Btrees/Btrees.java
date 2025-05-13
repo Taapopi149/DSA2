@@ -2,21 +2,17 @@
 
 /*
  * 
-Maximum number of keys = m - 1
-Maximum number of children = m
-
-Minimum number of keys (except root) = ⌈(m-1)/2⌉
-Minimum number of children (except root) = ⌈m/2⌉
-
 When deleting we need to account for
 -- Deleting from a leaf node
 -- Deleting from internal node
 
- * 
-*/
+-- B-Tree of order 't' (minimum degree)
+-- Each node can have at most 2t - 1 keys, and 2t children
 
-// B-Tree of order 't' (minimum degree)
-// Each node can have at most 2t - 1 keys, and 2t children
+ * 
+*/ 
+
+
 
 
 package SectionB.Btrees;
@@ -53,7 +49,7 @@ public class Btrees {
         this.minimumDegree = minimumDegree;
     }
 
-    
+ // ==================== used for Search =======================================================   
     public boolean search(int key) {
     if (root == null) {
         return false;
@@ -64,9 +60,11 @@ public class Btrees {
 // ================================== Insert Logic ==================================================
 
     //Insert a List
+    //When a node has 2t - 1 keys, it is full and must be split before inserting more.
+
     public void insertList(int[] elements) {
         for (int element : elements) {
-            insert(element); // Use the existing insert method for individual elements
+            insert(element); 
         }
         System.out.println("All elements inserted into the B-tree.");
     }
@@ -79,11 +77,11 @@ public class Btrees {
         if (root == null) {
             root = new BtreeNode(minimumDegree, true);
             root.keys[0] = key;
-            root.n=1;
+            root.n=1; //This line sets the number of keys currently present in the root node to 1.
         }  else {
             if (root.n == 2 * minimumDegree - 1) {
                 BtreeNode newRoot = new BtreeNode(minimumDegree, false);
-                newRoot.childern[0] = root;
+                newRoot.childern[0] = root; // old root becomes child
                 splitChild(newRoot, 0 , root);
                 insertNonFull(newRoot, key);
                 root = newRoot;
@@ -96,7 +94,8 @@ public class Btrees {
         System.out.println("Element inserted into the B-tree.");
 
     }
-// Helper function to insert a key into a non-full node
+
+    // Helper function to insert a key into a non-full node
 private void insertNonFull(BtreeNode node, int key) {
     int i = node.n - 1;  // Start from the rightmost key in the node
     if (node.leaf) {  // If the node is a leaf
@@ -126,6 +125,15 @@ private void insertNonFull(BtreeNode node, int key) {
         insertNonFull(node.childern[i], key);
     }
 }
+
+
+/*
+ * 
+Creating a new sibling node.
+Moving the middle key up to the parent.
+Splitting the keys and children between the old and new nodes.
+
+ */
 
 
     private void splitChild(BtreeNode parent, int index, BtreeNode fullChild){
@@ -168,12 +176,12 @@ public void delete(int key) {
         return;
     }
     
-    delete(root, key);
-    if (root.n == 0) {
+    delete(root, key); // removes the key from the B-tree starting from the root.
+    if (root.n == 0)  { // no keys left.
         if (root.leaf) {
             root = null;
         } else {
-            root = root.childern[0];
+            root = root.childern[0]; // if the root is an internal node with no keys (which can happen if keys are borrowed or merged during deletion), we replace the root with its first child
         }
     }
     System.out.println("Element deleted from the B-tree.");
@@ -201,9 +209,10 @@ private void delete(BtreeNode node, int key) {
 
         boolean flag = (idx == node.n); // if we are at the rightmost child
         BtreeNode child = node.childern[idx];
+        
         if (child.n < minimumDegree) {
             fill(node, idx);
-        }
+        } // child less then t keys, it underfilled, and we call fill(), Borrow from sibling, merge with a sibling.
 
         if (flag && idx > node.n) {
             delete(node.childern[idx - 1], key);
@@ -213,6 +222,8 @@ private void delete(BtreeNode node, int key) {
     }
 }
 
+
+//Since leaf nodes do not have children, the process is simply about removing the key and shifting the remaining keys.
 private void removeFromLeaf(BtreeNode node, int idx) {
     for (int i = idx + 1; i < node.n; i++) {
         node.keys[i - 1] = node.keys[i];
@@ -220,6 +231,7 @@ private void removeFromLeaf(BtreeNode node, int idx) {
     node.n--;
 }
 
+//This method is responsible for deleting a key from an internal node (not a leaf) while ensuring the B-tree remains valid after deletion.
 private void removeFromInternalNode(BtreeNode node, int idx) {
     int key = node.keys[idx];
     if (node.childern[idx].n >= minimumDegree) {
@@ -235,7 +247,7 @@ private void removeFromInternalNode(BtreeNode node, int idx) {
         delete(node.childern[idx], key);
     }
 }
-
+// The method is used when deleting a key from an internal node and that key has a left child.
 private int getPred(BtreeNode node, int idx) {
     BtreeNode cur = node.childern[idx];
     while (!cur.leaf) {
@@ -244,6 +256,7 @@ private int getPred(BtreeNode node, int idx) {
     return cur.keys[cur.n - 1];
 }
 
+//This method helps find the successor of the key to be deleted, which is needed when the key to be deleted is in an internal node (not a leaf).
 private int getSucc(BtreeNode node, int idx) {
     BtreeNode cur = node.childern[idx + 1];
     while (!cur.leaf) {
@@ -252,6 +265,7 @@ private int getSucc(BtreeNode node, int idx) {
     return cur.keys[0];
 }
 
+//This method determines how to fix the underfull node, either by borrowing a key from a sibling or by merging the child with its sibling.
 private void fill(BtreeNode node, int idx) {
     if (idx != 0 && node.childern[idx - 1].n >= minimumDegree) {
         borrowFromPrev(node, idx);
@@ -266,6 +280,7 @@ private void fill(BtreeNode node, int idx) {
     }
 }
 
+// This method handles the case when a node’s left sibling has extra keys and can lend one to an underfilled child.
 private void borrowFromPrev(BtreeNode node, int idx) {
     BtreeNode child = node.childern[idx];
     BtreeNode sibling = node.childern[idx - 1];
@@ -288,6 +303,7 @@ private void borrowFromPrev(BtreeNode node, int idx) {
     sibling.n -= 1;
 }
 
+// when a child node has fewer than the minimum number of keys (t - 1), and its right sibling has enough keys to lend one.
 private void borrowFromNext(BtreeNode node, int idx) {
     BtreeNode child = node.childern[idx];
     BtreeNode sibling = node.childern[idx + 1];
@@ -313,6 +329,7 @@ private void borrowFromNext(BtreeNode node, int idx) {
 }
 
 
+// call this when a child and its immediate sibling both have only the minimum number of keys
 private void merge(BtreeNode node, int idx) {
     BtreeNode child = node.childern[idx];
     BtreeNode sibling = node.childern[idx + 1];
@@ -338,6 +355,8 @@ private void merge(BtreeNode node, int idx) {
     child.n += sibling.n + 1;
     node.n--;
 }
+
+// ============================= Search ========================================================
 
 private int findKey(BtreeNode node, int key) {
     int idx = 0;
